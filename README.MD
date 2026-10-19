@@ -1,65 +1,68 @@
-# Применение кибербезопасности в дисциплине "Информатика"
+*[🇷🇺 Читать на русском языке](README.ru.md)*
 
-Добро пожаловать в репозиторий учебного проекта по кибербезопасности!
-Этот проект создан для наглядной демонстрации работы фундаментальных криптографических алгоритмов и концепций информационной безопасности. Все алгоритмы написаны с нуля на чистом Python, чтобы показать их внутреннюю математическую логику без использования готовых криптографических библиотек-чёрных ящиков.
+# Cybersecurity Applications in Computer Science
 
-## Zero Dependencies (Ноль зависимостей)
+Welcome to the educational cybersecurity project repository!
+This project was created to visually demonstrate how fundamental cryptographic algorithms and information security concepts work. All algorithms are written from scratch in pure Python to reveal their internal mathematical logic without relying on pre-built, black-box cryptographic libraries.
 
-В отличие от многих современных решений, этот проект не имеет внешних зависимостей. Для запуска и тестирования любого из алгоритмов достаточно установленного интерпретатора **Python 3.6 и выше**. Вам не потребуется использовать `pip`, создавать виртуальные окружения или устанавливать сторонние пакеты.
+## Zero Dependencies
 
-## Реализованные алгоритмы
+Unlike many modern solutions, this project has no external dependencies. To run and test any of the algorithms, all you need is an installed **Python 3.6+** interpreter. You will not need to use `pip`, create virtual environments, or install third-party packages.
 
-Проект включает 15 тематических скриптов, находящихся в директории `tasks/`. Каждый скрипт представляет отдельную концепцию безопасности (*15 задач*):
+## Implemented Algorithms
 
-1. **`authenticated_encryption.py`** — Аутентифицированное шифрование (AEAD).
-2. **`elliptic-curve_cryptography.py`** — Эллиптическая криптография (ECC).
-3. **`hamming_74.py`** — Помехоустойчивое кодирование (Код Хэмминга 7,4).
-4. **`heuristic_analysis.py`** — Эвристический анализатор.
-5. **`merkle_tree.py`** — Дерево Меркла (Merkle Tree).
-6. **`onion_routing.py`** — Луковая маршрутизация.
-7. **`post-quantum_cryptography.py`** — Постквантовая криптография.
-8. **`proof_of_work.py`** — Алгоритм Proof-of-Work.
-9. **`shamirs_secret_sharing.py`** — Разделение секрета Шамира.
-10. **`zero-knowledge_proof.py`** — Доказательство с нулевым разглашением (ZKP).
-11. **`steganography_lsb.py`** — Стеганография (внедрение данных методом LSB).
-12. **`totp_2fa.py`** — Двухфакторная аутентификация (генерация кодов TOTP).
-13. **`diffie_hellman.py`** — Алгоритм Диффи-Хеллмана для безопасного обмена ключами.
-14. **`pbkdf2_hashing.py`** — Хэширование паролей с солью на базе стандарта PBKDF2.
-15. **`cbc_mode_xor.py`** — Имитация режима сцепления блоков шифротекста (CBC).
-## Загрузка исходного кода
+The project includes 15 thematic scripts located in the `tasks/` directory. Each script represents a distinct security concept (*15 tasks*):
 
-Вы можете клонировать репозиторий на свой локальный компьютер с помощью консоли:
+1. **`authenticated_encryption.py`** — Authenticated Encryption (AEAD).
+2. **`elliptic-curve_cryptography.py`** — Elliptic Curve Cryptography (ECC).
+3. **`hamming_74.py`** — Error-Correcting Code (Hamming Code 7,4).
+4. **`heuristic_analysis.py`** — Heuristic Analyzer.
+5. **`merkle_tree.py`** — Merkle Tree.
+6. **`onion_routing.py`** — Onion Routing.
+7. **`post-quantum_cryptography.py`** — Post-Quantum Cryptography.
+8. **`proof_of_work.py`** — Proof-of-Work Algorithm.
+9. **`shamirs_secret_sharing.py`** — Shamir's Secret Sharing.
+10. **`zero-knowledge_proof.py`** — Zero-Knowledge Proof (ZKP).
+11. **`steganography_lsb.py`** — Steganography (LSB Data Embedding).
+12. **`totp_2fa.py`** — Two-Factor Authentication (TOTP Code Generation).
+13. **`diffie_hellman.py`** — Diffie-Hellman Key Exchange Algorithm.
+14. **`pbkdf2_hashing.py`** — Salted Password Hashing using PBKDF2.
+15. **`cbc_mode_xor.py`** — Cipher Block Chaining (CBC) Mode Simulation.
+
+## Downloading the Source Code
+
+You can clone the repository to your local machine using the terminal:
 
 ```sh
-git clone https://github.com/snezhinyan1/cybersecurity_project
+git clone [https://github.com/snezhinyan1/cybersecurity_project](https://github.com/snezhinyan1/cybersecurity_project)
 cd cybersecurity_project
 ```
 
-## Запуск проекта
+## Running the Project
 
 | Windows                    | Linux / macOS                   |
-|----------------------------|------------------------|
-| `python имя_файла.py` | `python3 имя_файла.py` |
+|----------------------------|---------------------------------|
+| `python tasks/filename.py` | `python3 tasks/filename.py`     |
 
-Например, для запуска демонстрации доказательства с нулевым разглашением выполните:
+For example, to run the Zero-Knowledge Proof demonstration, execute:
 
 ```sh
-python zero-knowledge_proof.py
+python tasks/zero-knowledge_proof.py
 ```
 
-## Правовая информация и лицензирование
+## Legal and Licensing
 
-Проект распространяется под лицензией [MIT License][mit].
+This project is distributed under the [MIT License][mit].
 
 [mit]: LICENSE.txt
 
-### Отказ от ответственности
+### Disclaimer
 
 > [!Important]
-> Код, представленный в данном репозитории, разработан **исключительно в образовательных целях** для демонстрации математических принципов защиты информации. Скрипты не предназначены для шифрования реальных конфиденциальных или коммерческих данных в production-среде.
+> The code provided in this repository is developed **strictly for educational purposes** to demonstrate the mathematical principles of information security. These scripts are not intended for encrypting real confidential or commercial data in a production environment.
 
-## Участие и развитие проекта
+## Contributing and Development
 
-Если вы хотите предложить улучшения, оптимизировать алгоритмы или добавить новые концепции из курса информатики, вы можете создать [Issue][issues] или отправить Pull Request.
+If you want to suggest improvements, optimize algorithms, or add new concepts from the computer science curriculum, feel free to open an [Issue][issues] or submit a Pull Request.
 
 [issues]: https://github.com/snezhinyan1/cybersecurity_project/issues
