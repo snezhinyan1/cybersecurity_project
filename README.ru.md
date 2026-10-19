@@ -44,7 +44,7 @@ cd cybersecurity_project
 Например, для запуска демонстрации доказательства с нулевым разглашением выполните:
 
 ```sh
-python zero-knowledge_proof.py
+python tasks/zero-knowledge_proof.py
 ```
 
 ## Правовая информация и лицензирование
