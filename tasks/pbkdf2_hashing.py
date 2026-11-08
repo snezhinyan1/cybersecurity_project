@@ -1,46 +1,45 @@
-# Безопасное хранение паролей (PBKDF2).
-# Реализация функции формирования ключа на основе пароля.
-# Использование уникальной криптографической соли и большого числа
-# итераций хэширования обеспечивает защиту базы данных от
-# предварительно вычисленных таблиц и атак полным перебором.
-
-import sys
-
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
+# Проверка пароля с помощью PBKDF2-HMAC-SHA256. Случайная соль затрудняет повторное использование
+# предварительно вычисленных результатов.
 
 import hashlib
 import secrets
+import sys
+
+# Число итераций задаётся одинаковым при создании и проверке производного ключа.
+ITERATIONS = 100000
 
 
 def generate_password_hash(password):
-    # Генерация криптографически стойкой псевдослучайной последовательности (соли).
-    # Использование уникальной соли предотвращает атаки с использованием радужных таблиц.
+    # Для каждого сохранения пароля независимо генерируется 16-байтовая соль.
     salt = secrets.token_bytes(16)
 
-    # Применение алгоритма PBKDF2 с HMAC-SHA256 и заданным количеством итераций.
-    # Высокое число итераций экспоненциально увеличивает затраты вычислительных ресурсов при брутфорсе.
-    iterations = 100000
+    # Пароль кодируется в UTF-8 и передаётся PBKDF2 вместе с солью и числом итераций.
     derived_key = hashlib.pbkdf2_hmac(
-        "sha256", password.encode("utf-8"), salt, iterations
+        "sha256", password.encode("utf-8"), salt, ITERATIONS
     )
 
+    # Соль и производный ключ сохраняются для последующей проверки.
     return salt, derived_key
 
 
 def verify_password(stored_salt, stored_hash, input_password):
-    # Вычисление хэша вводимого пароля с использованием ранее сохраненной соли базы данных.
-    iterations = 100000
+    # Производный ключ для предъявленного пароля вычисляется с ранее сохранённой солью.
     calculated_key = hashlib.pbkdf2_hmac(
-        "sha256", input_password.encode("utf-8"), stored_salt, iterations
+        "sha256", input_password.encode("utf-8"), stored_salt, ITERATIONS
     )
 
-    # Безопасное сравнение полученного ключа с эталонным значением из базы данных.
+    # Проверка сравнивает производные ключи без остановки на первом несовпадающем байте.
     return secrets.compare_digest(stored_hash, calculated_key)
 
 
-user_password = "correct_horse_battery_staple"
-db_salt, db_hash = generate_password_hash(user_password)
+# Демонстрационный блок выполняется только при запуске модуля как программы.
+if __name__ == "__main__":
+    # Если поток поддерживает настройку, для вывода кириллицы используется UTF-8.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
 
-is_valid = verify_password(db_salt, db_hash, "correct_horse_battery_staple")
-print(f"Результат верификации корректного пароля: {is_valid}")
+    user_password = "correct_horse_battery_staple"
+    db_salt, db_hash = generate_password_hash(user_password)
+
+    is_valid = verify_password(db_salt, db_hash, "correct_horse_battery_staple")
+    print(f"Результат верификации корректного пароля: {is_valid}")

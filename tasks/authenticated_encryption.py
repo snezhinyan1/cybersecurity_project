@@ -1,50 +1,68 @@
-#  Аутентифицированное шифрование (AEAD).
-#  Реализация протокола аутентифицированного шифрования по схеме Encrypt-then-MAC.
-#  Метод обеспечивает конфиденциальность данных и криптографическую гарантию их целостности,
-#  предотвращая атаки на изменение зашифрованного сообщения.
+# Учебная схема Encrypt-then-MAC на основе XOR и HMAC-SHA256. Повторение XOR-ключа ослабляет
+# конфиденциальность.
 
 import hashlib
 import hmac
 import sys
 
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
+
+def xor_with_key(data, key):
+    # Непустой ключ необходим для циклического обращения к его байтам.
+    if not key:
+        raise ValueError("Ключ XOR не может быть пустым.")
+
+    # Результат накапливается в изменяемом массиве байтов.
+    result = bytearray()
+    for index, byte in enumerate(data):
+        # Остаток от деления индекса на длину ключа задаёт циклическую позицию в ключе.
+        key_byte = key[index % len(key)]
+        # XOR объединяет соответствующие биты байта данных и байта ключа.
+        result.append(byte ^ key_byte)
+    return bytes(result)
 
 
 def authenticated_encrypt(plaintext, enc_key, mac_key):
-    # Выполнение операции побайтового сложения по модулю 2 (XOR) между текстом и ключом шифрования.
-    ciphertext = bytes(
-        a ^ b for a, b in zip(plaintext.encode(), enc_key * len(plaintext))
-    )
+    if not mac_key:
+        raise ValueError("Ключ HMAC не может быть пустым.")
+    # Кодирование в UTF-8 переводит исходный текст в байты для побитовой операции.
+    ciphertext = xor_with_key(plaintext.encode("utf-8"), enc_key)
 
-    # Генерация имитовставки HMAC на основе полученного шифротекста для обеспечения целостности.
+    # Метка вычисляется от шифротекста с отдельным ключом HMAC.
     mac = hmac.new(mac_key, ciphertext, hashlib.sha256).digest()
 
     return ciphertext, mac
 
 
 def authenticated_decrypt(ciphertext, mac, enc_key, mac_key):
-    # Вычисление эталонного значения HMAC для верификации входящего шифротекста.
+    if not mac_key:
+        raise ValueError("Ключ HMAC не может быть пустым.")
+    # Полученная метка проверяется относительно метки, заново вычисленной по шифротексту.
     expected_mac = hmac.new(mac_key, ciphertext, hashlib.sha256).digest()
 
-    # Безопасное сравнение хэшей за константное время для предотвращения атак по времени (timing attacks).
+    # Сравнение не прерывается при первом несовпадающем байте, что снижает риск утечки по времени.
     if not hmac.compare_digest(mac, expected_mac):
         raise ValueError("Ошибка верификации: нарушение целостности данных.")
 
-    # Декодирование сообщения при условии успешной верификации криптографической подписи.
-    return bytes(a ^ b for a, b in zip(ciphertext, enc_key * len(ciphertext))).decode()
+    # Повторный XOR с тем же ключом восстанавливает байты исходного текста.
+    return xor_with_key(ciphertext, enc_key).decode("utf-8")
 
 
-# Демонстрация работы алгоритма при отсутствии вмешательства.
-c, m = authenticated_encrypt("Send $100", b"k1", b"k2")
-print("Результат дешифрования:", authenticated_decrypt(c, m, b"k1", b"k2"))
+# Демонстрационный блок выполняется только при запуске модуля как программы.
+if __name__ == "__main__":
+    # Если поток поддерживает настройку, для вывода кириллицы используется UTF-8.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
 
-# Моделирование преднамеренного искажения данных в канале связи.
-hacked_c = bytearray(c)
-hacked_c[0] ^= 0x01
+    encryption_key = b"k1"
+    hmac_key = b"k2"
+    ciphertext, tag = authenticated_encrypt("Привет!", encryption_key, hmac_key)
+    recovered = authenticated_decrypt(ciphertext, tag, encryption_key, hmac_key)
+    print("После расшифрования:", recovered)
 
-try:
-    # Попытка дешифрования поврежденного пакета данных.
-    authenticated_decrypt(hacked_c, m, b"k1", b"k2")
-except Exception as e:  # noqa: BLE001
-    print(f"Исключение перехвачено: {e}")
+    tampered_ciphertext = bytearray(ciphertext)
+    # Инверсия младшего бита первого байта моделирует изменение шифротекста.
+    tampered_ciphertext[0] ^= 1
+    try:
+        authenticated_decrypt(tampered_ciphertext, tag, encryption_key, hmac_key)
+    except ValueError as error:
+        print(f"Подмена обнаружена. {error}")
